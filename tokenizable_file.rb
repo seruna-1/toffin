@@ -6,9 +6,9 @@ class TokenizableFile < ActiveRecord::Base
 
 	has_many :tokens, through: :file_tokenizations
 
-	before_create :assign_directory_id
+	before_save :assign_directory_id
 
-	after_create :create_in_filesystem
+	after_save :create_in_filesystem
 
 	before_destroy :destroy_from_filesystem
 
@@ -30,15 +30,9 @@ class TokenizableFile < ActiveRecord::Base
 
 	# @return [Pathaname] Path to this file.
 	def path
-		filename = self.id.to_s + '.' + self.type
+		filename = self.id.to_s + '.' + self.file_type
 
 		path_to_file = TokenizableFileTree.path_from_directory_id(self.directory_id) + filename
-
-		if not path_to_file.file?
-			self.destroy
-
-			return nil
-		end
 
 		return path_to_file
 	end
@@ -46,7 +40,7 @@ class TokenizableFile < ActiveRecord::Base
 	# Looks for files containing all provided tokens.
 	# @param token_names [Array] Array of token names.
 	# @return [Array] Array of TokenizableFile records.
-	def search_by_tokens token_names
+	def self.search_by_tokens token_names
 		TokenizableFile.joins(:tokens)
 		.where(tokens: {name: token_names})
 		.group('tokenizable_files.id')

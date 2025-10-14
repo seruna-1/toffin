@@ -40,18 +40,20 @@ class TokenizableFileTree
 	# @param path [Pathname] Relative path from root.
 	# @return [Integer] Directory id.
 	def self.directory_id_from_path path
-		if path.absolute?
-			raise Error "Provide relative path."
+		parts = path.relative_path_from(@root).each_filename.to_a
+
+		for part in parts
+			if part.length != 1 then raise "Each directory length should be 1." end
 		end
 
-		path.to_s.delete('/').to_i
+		parts.join.to_i
 	end
 
 	# Returns a directory path from a directory id.
 	# @param directory_number [Integer] Directory number (as in column directory_id in table tokenizable_files).
 	# @return [Pathname] Directory path.
 	def self.path_from_directory_id directory_number
-		path = Pathname.new ''
+		path = @root
 
 		directory_number.to_s.each_char do |char|
 			path += char

@@ -2,7 +2,7 @@ class CreateTables < ActiveRecord::Migration[8.0]
 	def change
 		create_table :tokenizable_files do |t|
 			t.string :title
-			t.string :type
+			t.string :file_type
 			t.integer :directory_id
 			t.timestamps
 		end
