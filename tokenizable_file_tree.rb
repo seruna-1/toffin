@@ -68,17 +68,22 @@ class TokenizableFileTree
 
 		may_be_created = nil
 
-		terminate = false
+		maybe_more_layer_dirs = true
+		# terminate = false
 
-		while not terminate
+		while not maybe_more_layer_dirs
 			path_deepness = current_path.each_filename.to_a.length
 
 			deep_enough_to_yield = path_deepness == layer
 
 			if not deep_enough_to_yield
 				current_path += '0'
-			else # Yield
-				for i in (0..9)
+			else
+				tip = 0
+
+				continue_yielding = true
+
+				while continue_yielding
 					to_be_yielded = current_path + i.to_s
 
 					if to_be_yielded.directory?
@@ -88,36 +93,34 @@ class TokenizableFileTree
 							may_be_created = to_be_yielded
 						end
 
-						break
+						continue_yielding = false
 					end
 				end
 
 				# Go back
 
-				loop do
-					if current_path == @root
-						terminate = true
+				try_pop_tip = true
 
-						break
+				while maybe_more_layer_dirs and try_pop_tip
+					if current_path == @root
+						maybe_more_layer_dirs = false
 					end
 
-					# Pop last path part
+					# Pop last path part (tip)
 
 					tip = current_path.basename.to_s.to_i
 
 					current_path += '..'
 
-					# Continue loop if should pop another.
+					if not tip == 9
+						# Shouldn't continue popping. Increase current tip and put it back.
 
-					if tip == 9 then next end
+						tip += 1
 
-					# Push increased tip and stop if shouldn't pop another.
+						current_path + tip.to_s
 
-					tip += 1
-
-					current_path + tip.to_s
-
-					break
+						try_pop_tip = false
+					end
 				end
 			end
 		end
@@ -174,16 +177,18 @@ class TokenizableFileTree
 
 		layers = 0
 
-		loop do
-			children_names = path.children.map do |child|
-				child.basename.to_s
+		can_go_deeper = true
+
+		while can_go_deeper
+			children_names = path.children.map { |child| child.basename.to_s }
+
+			if not children_names.any? '0'
+				can_go_deeper = false
+			else
+				path += '0'
+
+				layers += 1
 			end
-
-			if not children_names.any? '0' then break end
-
-			path += '0'
-
-			layers += 1
 		end
 
 		return layers
