@@ -66,25 +66,26 @@ class TokenizableFileTree
 	def self.each_layer_dir layer
 		current_path = @root
 
+		path_deepness = 0
+
 		may_be_created = nil
 
 		maybe_more_layer_dirs = true
-		# terminate = false
 
-		while not maybe_more_layer_dirs
-			path_deepness = current_path.each_filename.to_a.length
-
-			deep_enough_to_yield = path_deepness == layer
+		while maybe_more_layer_dirs
+			deep_enough_to_yield = path_deepness == ( layer - 1)
 
 			if not deep_enough_to_yield
 				current_path += '0'
+
+				path_deepness += 1
 			else
 				tip = 0
 
 				continue_yielding = true
 
 				while continue_yielding
-					to_be_yielded = current_path + i.to_s
+					to_be_yielded = current_path + tip.to_s
 
 					if to_be_yielded.directory?
 						yield to_be_yielded
@@ -112,12 +113,16 @@ class TokenizableFileTree
 
 					current_path += '..'
 
+					path_deepness -= 1
+
 					if not tip == 9
 						# Shouldn't continue popping. Increase current tip and put it back.
 
 						tip += 1
 
-						current_path + tip.to_s
+						current_path += tip.to_s
+
+						path_deepness += 1
 
 						try_pop_tip = false
 					end
