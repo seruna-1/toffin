@@ -5,3 +5,5 @@ require_relative 'tokenizable_file'
 require_relative 'token'
 
 require_relative 'file_tokenization'
+
+require_relative 'file_to_file_relation'

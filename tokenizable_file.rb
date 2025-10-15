@@ -2,6 +2,28 @@ require_relative 'tokenizable_file_tree'
 
 # File in a tokenizable file tree.
 class TokenizableFile < ActiveRecord::Base
+	# Can be the first or the second in file to file relations
+
+	has_many :first_relations,
+		class_name: 'FileToFileRelation',
+		foreign_key: 'first_file_id',
+		dependent: :destroy
+
+	has_many :second_relations,
+		class_name: 'FileToFileRelation',
+		foreign_key: 'second_file_id',
+		dependent: :destroy
+
+	# Access for both cases in file to file relations
+
+	has_many :related_files_as_first,
+		through: :first_relations,
+		source: :second_file
+
+	has_many :related_files_as_second,
+		through: :second_relations,
+		source: :first_file
+
 	has_many :file_tokenizations
 
 	has_many :tokens, through: :file_tokenizations

@@ -16,5 +16,10 @@ class CreateTables < ActiveRecord::Migration[8.0]
 			:tokens,
 			table_name: :file_tokenizations
 		)
+
+		create_table :file_to_file_relations do |t|
+			t.references :first_file, foreign_key: { to_table: :tokenizable_files }
+			t.references :second_file, foreign_key: { to_table: :tokenizable_files }
+		end
 	end
 end
