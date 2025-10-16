@@ -34,6 +34,11 @@ class TokenizableFile < ActiveRecord::Base
 
 	before_destroy :destroy_from_filesystem
 
+	# return [Array] Files related to this one.
+	def related_files
+		self.related_files_as_first + self.related_files_as_second
+	end
+
 	# Associates an array of token_names to the file. If any token name hasn't a record, it is created.
 	# @params token_names [Array] Array of token names.
 	def add_token_names token_names
