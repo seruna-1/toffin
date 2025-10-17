@@ -1,4 +1,8 @@
 class CreateTables < ActiveRecord::Migration[8.0]
+	def connection
+		Token.retrieve_connection
+	end
+
 	def change
 		create_table :tokenizable_files do |t|
 			t.string :title, null: false

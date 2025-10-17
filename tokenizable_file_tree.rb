@@ -27,7 +27,12 @@ class TokenizableFileTree
 
 		database_path = @root + 'database.db'
 
-		ActiveRecord::Base.establish_connection adapter: 'sqlite3', database: database_path
+		connection = {adapter: 'sqlite3', database: database_path}
+
+		Token.establish_connection connection
+		TokenizableFile.establish_connection connection
+		FileTokenization.establish_connection connection
+		FileToFileRelation.establish_connection connection
 
 		if not database_path.exist?
 			puts "Database file doesn't exist. Creating one."
