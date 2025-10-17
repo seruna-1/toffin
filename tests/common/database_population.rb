@@ -2,9 +2,13 @@ require_relative '../../toffin'
 
 module DatabasePopulation
 	def create_database
-		Dir.mkdir 'test-backend'
+		@test_root = Pathname.new '/tmp/toffin/test/backend'
 
-		TokenizableFileTree.open 'test-backend'
+		puts "Creating backend at [#{@test_root}]."
+
+		`mkdir -p #{@test_root.to_s}`
+
+		TokenizableFileTree.open @test_root
 	end
 
 	def create_files

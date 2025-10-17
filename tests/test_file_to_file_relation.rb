@@ -1,0 +1,36 @@
+require 'minitest/autorun'
+
+require_relative '../toffin'
+
+require_relative 'common/database_population'
+
+class TestFileToFileRelation < Minitest::Test
+	include DatabasePopulation
+
+	def setup
+		self.create_database
+
+		self.create_files
+
+		self.create_tokens
+
+		self.create_file_to_file_relations
+	end
+
+	def test_relation_creation
+		FileToFileRelation.all.length == 1
+	end
+
+	def test_graph
+		azimuth_id = TokenizableFile.find_by(title: 'concrete mathematics annotations').id
+
+		# Map file to file relations directly involving azimuth
+		map = FileToFileRelation.graph azimuth_id, 1
+
+		if not map.length == 1
+			raise "The file titled [concrete mathematics] is the only one directly related to [concrete mathematics annotations]."
+
+			puts "Wrong map: #{map}"
+		end
+	end
+end
