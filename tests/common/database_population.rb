@@ -11,6 +11,10 @@ module DatabasePopulation
 		TokenizableFileTree.open @test_root
 	end
 
+	def destroy_database
+		`rm -r #{@test_root.to_s}`
+	end
+
 	def create_files
 		TokenizableFile.create(title: 'concrete mathematics', file_type: 'pdf')
 		TokenizableFile.create(title: 'concrete mathematics annotations', file_type: 'md')
