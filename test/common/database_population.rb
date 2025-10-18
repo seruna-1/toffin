@@ -19,7 +19,8 @@ module DatabasePopulation
 		TokenizableFile.create(title: 'concrete mathematics', file_type: 'pdf')
 		TokenizableFile.create(title: 'concrete mathematics annotations', file_type: 'md')
 		TokenizableFile.create(title: 'calculus', file_type: 'pdf')
-		TokenizableFile.create(title: 'calculus annotations', file_type: 'md')
+		TokenizableFile.create(title: 'calculus (from Stewart) annotations', file_type: 'md')
+		TokenizableFile.create(title: '2025 1st semester restrospection', file_type: 'md')
 	end
 
 	def create_tokens
@@ -49,6 +50,21 @@ module DatabasePopulation
 		FileToFileRelation.relate(
 			TokenizableFile.find_by(title: 'concrete mathematics'),
 			TokenizableFile.find_by(title: 'concrete mathematics annotations')
+		)
+
+		FileToFileRelation.relate(
+			TokenizableFile.find_by(title: 'calculus'),
+			TokenizableFile.find_by(title: 'calculus (from Stewart) annotations')
+		)
+
+		FileToFileRelation.relate(
+			TokenizableFile.find_by(title: '2025 1st semester restrospection'),
+			TokenizableFile.find_by(title: 'concrete mathematics')
+		)
+
+		FileToFileRelation.relate(
+			TokenizableFile.find_by(title: '2025 1st semester restrospection'),
+			TokenizableFile.find_by(title: 'calculus')
 		)
 	end
 end

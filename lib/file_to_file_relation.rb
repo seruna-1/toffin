@@ -1,5 +1,3 @@
-require 'set'
-
 class FileToFileRelation < ActiveRecord::Base
 	belongs_to :first_file, class_name: "TokenizableFile", foreign_key: 'first_file_id'
 
@@ -15,45 +13,54 @@ class FileToFileRelation < ActiveRecord::Base
 		self.create first_file_id: file1.id, second_file_id: file2.id
 	end
 
+	def pretty
+		ids = [ self.first_file_id, self.second_file_id ]
+
+		names = ids.map { |id| TokenizableFile.find(id).title }
+
+		"Between [#{names[0]}] and [#{names[1]}]."
+	end
+
 	# return [Array] File to file relations involving this one (directly if range is 1 or indirectly if greater).
 	def self.graph azimuth_id, range=1
-		seen_file_ids = Array.new
+		seen_file_ids = Set.new
 
-		pairs = Array.new
+		next_depth_ids = [azimuth_id]
 
-		stack = [ [azimuth_id] ] # Each distance is an array
+		relations = Set.new
 
 		current_depth = 1
 
-		while not stack.empty? and not (current_depth > range)
-			if stack.first.empty?
-				stack.shift
+		while not next_depth_ids.empty? and current_depth <= range
+			puts "Unseen file ids: #{next_depth_ids}"
 
-				current_depth += 1
-			else
-				current_id = stack.first.shift
+			current_depth_ids = next_depth_ids
 
-				gotten_pairs = FileToFileRelation.where("first_file_id = :id OR second_file_id = :id", id: current_id)
+			next_depth_ids = []
 
-				for gotten_pair in gotten_pairs
-					pairs << gotten_pair
+			current_depth += 1
 
-					for id in [ gotten_pair.first_file_id, gotten_pair.second_file_id ]
-						if not seen_file_ids.any?(id)
-							seen_file_ids << id
+			# Prevent current file ids to reappear
+			seen_file_ids += current_depth_ids
 
-							if stack.length == 1
-								stack << [id]
-							else
-								stack[1] << id
-							end
-						end
+			for file_id in current_depth_ids
+				current_relations = FileToFileRelation.where("first_file_id = :id OR second_file_id = :id", id: file_id)
+
+				for current_relation in current_relations
+					relations << current_relation
+
+					if not seen_file_ids.any? current_relation.first_file_id
+						next_depth_ids << current_relation.first_file_id
+					end
+
+					if not seen_file_ids.any? current_relation.second_file_id
+						next_depth_ids << current_relation.second_file_id
 					end
 				end
 			end
 		end
 
-		return pairs
+		return relations
 	end
 
 	private

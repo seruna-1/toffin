@@ -34,24 +34,26 @@ class TestFileToFileRelation < Minitest::Test
 	end
 
 	def test_graph
-		azimuth_id = TokenizableFile.find_by(title: 'concrete mathematics annotations').id
+		azimuth_id = TokenizableFile.find_by(title: '2025 1st semester restrospection').id
 
-		# Map file to file relations directly involving azimuth
-		map = FileToFileRelation.graph azimuth_id, 1
+		pairs_lengths = [ 2, 4 ]
 
-		if not map.length == 1
-			raise \
-				"The file titled [concrete mathematics] is the only one directly related to [concrete mathematics annotations]." + "\n" \
-				+ "Wrong map: " + "\n" \
-				+ map.inspect
-		else
-			puts "Map with range 1 inspection:", map.inspect
+		for range in (1..2)
+			pairs = FileToFileRelation.graph azimuth_id, range
 
-			puts "Map with range 1 by titles:"
+			puts "Map with range #{range} inspection:", pairs.inspect
 
-			for relation in map
-				puts "#{relation.first_file.title} relates to #{relation.second_file.title}"
+			puts "Prettyfied:"
+
+			for pair in pairs
+				puts pair.pretty
 			end
+
+			if pairs.length != pairs_lengths[range-1]
+				raise "Incorrect map length. Expected #{pairs_lengths[range]}. Got #{pairs.length}."
+			end
+
+			puts ''
 		end
 	end
 end
