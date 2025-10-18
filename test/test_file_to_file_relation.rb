@@ -1,6 +1,6 @@
 require 'minitest/autorun'
 
-require_relative '../toffin'
+require_relative '../lib/toffin'
 
 require_relative 'common/database_population'
 

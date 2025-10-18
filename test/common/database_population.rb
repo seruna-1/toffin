@@ -1,4 +1,4 @@
-require_relative '../../toffin'
+require_relative '../../lib/toffin'
 
 module DatabasePopulation
 	def create_database

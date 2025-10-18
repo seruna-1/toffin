@@ -1,0 +1,13 @@
+git-message.txt
+
+*.gem
+
+/test/tmp/
+
+/.bundle/
+
+/.yardoc/
+
+/doc/
+
+Gemfile.lock
