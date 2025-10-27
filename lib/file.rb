@@ -1,28 +1,16 @@
-require_relative 'tokenizable_file_tree'
-
 # File in a tokenizable file tree.
-class TokenizableFile < ActiveRecord::Base
+class TokenizableFileTree::File < TokenizableFileTree::RecordBase
 	# Can be the first or the second in file to file relations
 
 	has_many :first_relations,
 		class_name: 'FileToFileRelation',
-		foreign_key: 'first_file_id',
+		foreign_key: 'first_id',
 		dependent: :destroy
 
 	has_many :second_relations,
 		class_name: 'FileToFileRelation',
-		foreign_key: 'second_file_id',
+		foreign_key: 'second_id',
 		dependent: :destroy
-
-	# Access for both cases in file to file relations
-
-	has_many :related_files_as_first,
-		through: :first_relations,
-		source: :second_file
-
-	has_many :related_files_as_second,
-		through: :second_relations,
-		source: :first_file
 
 	has_many :file_tokenizations
 
@@ -36,7 +24,11 @@ class TokenizableFile < ActiveRecord::Base
 
 	# return [Array] Files related to this one.
 	def related_files
-		self.related_files_as_first + self.related_files_as_second
+		relations_ids = FileConnection.where("first_id = :this_id OR secon_id = :this_id", this_id: self.id).pluck(:first_id, :second_id)
+
+		related_ids = relation_ids.select { |pair| if self.id == pair[0] then pair[1] else pair[0] end }
+
+		Filename.where(id: related_ids)
 	end
 
 	# Associates an array of token_names to the file. If any token name hasn't a record, it is created.

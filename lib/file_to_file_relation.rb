@@ -1,7 +1,7 @@
-class FileToFileRelation < ActiveRecord::Base
-	belongs_to :first_file, class_name: "TokenizableFile", foreign_key: 'first_file_id'
+class TokenizableFileTree::FileToFileRelation < TokenizableFileTree::RecordBase
+	belongs_to :first, class_name: "TokenizableFileTree::File", foreign_key: 'first_id'
 
-	belongs_to :second_file, class_name: "TokenizableFile", foreign_key: 'second_file_id'
+	belongs_to :second, class_name: "TokenizableFileTree::File", foreign_key: 'second_id'
 
 	validate :prevent_self_relation
 
